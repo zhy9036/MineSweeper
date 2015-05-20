@@ -12,10 +12,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+
+
+/**
+ * Yang Zhang 
+ * 05/20/2015
+ * 
+ * MineButton class is extended from JButton and used to present
+ * the cell block in game.
+ */
+
 public class MineButton extends JButton {
-	/**
-	 * 
-	 */
+
 	private MineButton mb = this;
 	private static final long serialVersionUID = 1L;
 	private boolean hasMine = false;
@@ -50,62 +58,12 @@ public class MineButton extends JButton {
 		this.setFont(new Font(null, Font.PLAIN, 20));
 		this.setBorderPainted(false);
 		this.addMouseListener(new MouseAdapter(){
+			
+			
+			// no need to override clicked method
 			@Override
 			public void mouseClicked(MouseEvent e){
-				System.out.println("clicked");
-				/*
-				if(gf.gameOver){
-					gf.f.setTitle("MineSweeper v0.1 Game Over");
-					return;
-				}
-				if(state == State.OPENED)
-					return;
-				
-				
-				//left click
-				if(e.getButton() == MouseEvent.BUTTON1) {
-					if(hasMine){
-						//mb.setIcon(MINEBOMB);
-						//gf.f.repaint();
-						gf.setGameOver();
-						gf.updateGameOver(mb, false);
-						System.out.println("LEFT: mine");
-						
-					}else if (state == State.CLOSED) {
-						state = State.OPENED;
-						if(mineCount == 0){	
-							mb.setIcon(BLANK);
-							//UPDATE ARROUND BUTTON
-							updateArroundButtons(mb);
-							System.out.println("LEFT: empty");
-						}else{
-							mb.setIcon(getNumIcon());
-							gf.decreaseNumNotMine();
-							System.out.println("LEFT: num");
-							
-						}						
-					}
-					if(gf.getNumNotMine() == 0){
-						//JOptionPane.showMessageDialog(null, "YOU WON!");
-						gf.updateGameOver(mb, true);
-					}
-					//System.out.println(gf.getNumNotMine()+"");
-				//right click	
-				}else if (e.getButton() == MouseEvent.BUTTON3){
-					if (state == State.CLOSED) {
-						state = State.FLAGED;
-						mb.setIcon(FLAG);
-						System.out.println("RIGHT: set flag");
-					}else if (state == State.FLAGED){
-						state = State.CLOSED;
-						mb.setIcon(NORMAL);
-						System.out.println("RIGHT: back normal");
-					}else{
-						System.out.println("QIPA "+state);
-					}
-				}
-				*/
-				
+				System.out.println("clicked");			
 			}
 			
 			@Override
@@ -116,28 +74,25 @@ public class MineButton extends JButton {
 				}
 				
 				
-				//both right and left down
+				
 				int onMask = MouseEvent.BUTTON1_DOWN_MASK & MouseEvent.BUTTON3_DOWN_MASK;
 				int offMask = MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK;
 				
-				if ((e.getModifiersEx() & (onMask | offMask)) == offMask){
-			       //System.out.println("Both Down!");
-				   //update around buttons
-					System.out.println("double key down!");
+				//both right and left down
+				if ((e.getModifiersEx() & (onMask | offMask)) == offMask){				  
+					//System.out.println("both key down!");
 					expandArroundButtons();
 					System.out.println("double " + gf.getNumNotMine()+"");
-					if(gf.getNumNotMine() == 0){
+					if(gf.getNumNotMine() == 0){ /* game won */
 						gf.updateGameOver(mb, true);
-						//JOptionPane.showMessageDialog(null, "YOU WON!");
 					}
+				// other cases: 1 single left click. 2 single right click
 		        }else{
 		        	if(state == State.OPENED)
 						return;
 					//left click
 					if(e.getButton() == MouseEvent.BUTTON1) {
 						if(hasMine){
-							//mb.setIcon(MINEBOMB);
-							//gf.f.repaint();
 							gf.setGameOver();
 							gf.updateGameOver(mb, false);
 							System.out.println("LEFT: mine");
@@ -157,7 +112,6 @@ public class MineButton extends JButton {
 							}						
 						}
 						if(gf.getNumNotMine() == 0){
-							//JOptionPane.showMessageDialog(null, "YOU WON!");
 							gf.updateGameOver(mb, true);
 						}
 						//System.out.println(gf.getNumNotMine()+"");
@@ -181,7 +135,8 @@ public class MineButton extends JButton {
 		});
 	}
 	
-	
+	// method to expand around buttons that are adjacent
+	// target MineButton if applicable
 	private void expandArroundButtons(){
 		if(this.state == State.OPENED && this.mineCount > 0){
 			int count = this.mineCount;
@@ -222,6 +177,8 @@ public class MineButton extends JButton {
 		}
 	}
 	
+	
+	// Method that returns a list of adjacent MineButtons
 	public ArrayList<MineButton> getAroundButtons(){
 		ArrayList<MineButton> list = new ArrayList();
 		MineButton[][] buttons = gf.buttons;
@@ -271,10 +228,14 @@ public class MineButton extends JButton {
 		return list;
 	}
 	
+	// method that returns the number of mines
+	// that around the target MineButton
 	public int getMineCount(){
 		return this.mineCount;
 	}
 	
+	// method to display the number of mines inside
+	// the target MineButton
 	public void showMineCount(){
 		if(!this.hasMine() ){
 			if(this.mineCount > 0)
@@ -283,6 +244,9 @@ public class MineButton extends JButton {
 				this.setIcon(BLANK);
 		}
 	}
+	
+	// method that keeps exploring around buttons when hit a blank
+	// MineButton until no blank cell found
 	public void updateArroundButtons(MineButton button) {
 		System.out.println("get into UAB");
 		Queue<MineButton> queue = new LinkedList();
@@ -400,6 +364,7 @@ public class MineButton extends JButton {
 		System.out.println("get OUT into UAB");
 	}
 	
+	// method that fetches corresponded image
 	private ImageIcon getNumIcon(){
 		ImageIcon c = null;
 		switch(mineCount){
